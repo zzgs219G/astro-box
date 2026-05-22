@@ -41,6 +41,9 @@ async function getData() {
           const now = new Date();
           const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
+          // 如果返回了 ico，拼凑完整的图标地址，否则给一个空字符串由前端 fallback 处理
+          const iconUrl = node.ico ? `https://yxlzy.lanzoue.com/ico/${node.ico}` : '';
+
           list.push({
             id: node.id,
             title: node.name_all,
@@ -48,6 +51,7 @@ async function getData() {
             tagId: resource.id,          // 绑定子分类（如：学习资料）
             categoryId: resource.categoryId, // 绑定大分类（如：软件库）
             lanzaoUrl: node.shareUrl,
+            iconUrl: iconUrl,
             createdAt: todayStr,
             password: ''
           });
