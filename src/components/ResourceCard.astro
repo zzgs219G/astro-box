@@ -36,13 +36,13 @@ if (parts.length === 2) {
 ---
 
 <div
-  class="resource-card group flex flex-col bg-white/70 dark:bg-black/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/50 dark:border-white/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgb(0,0,0,0.2)] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:-translate-y-1"
+  class="resource-card group flex flex-col bg-white dark:bg-[#18181b] rounded-2xl p-5 border border-gray-200/60 dark:border-[#27272a] shadow-sm hover:shadow-md transition-all duration-300"
   data-category={categoryId}
   data-tag={tagId}
   data-title={title.toLowerCase()}
 >
-  <div class="flex items-start space-x-5 mb-5">
-    <div class="flex-shrink-0 w-[3.5rem] h-[3.5rem] flex items-center justify-center rounded-[1.25rem] bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-2xl overflow-hidden group-hover:scale-105 transition-transform duration-300">
+  <div class="flex items-start space-x-4 mb-4">
+    <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-[#27272a] border border-gray-100 dark:border-[#3f3f46] text-2xl overflow-hidden group-hover:scale-105 transition-transform duration-300">
       {iconUrl ? (
         <img src={iconUrl} alt="icon" class="w-full h-full object-cover"
              onerror={`this.onerror=null; this.outerHTML='<span class="opacity-80">${emoji}</span>';`} />
@@ -50,36 +50,31 @@ if (parts.length === 2) {
         <span class="opacity-80">{emoji}</span>
       )}
     </div>
-    <div class="flex-1 min-w-0 pt-1">
-      <h3 class="text-[1.1rem] font-bold text-gray-900 dark:text-gray-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" title={title}>
+    <div class="flex-1 min-w-0 pt-0.5">
+      <h3 class="text-base font-bold text-gray-900 dark:text-gray-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" title={title}>
         {title}
       </h3>
-      <div class="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-[0.8rem] font-medium text-gray-500 dark:text-gray-400">
+      <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
         {size && (
-          <span class="inline-flex items-center">
-            <svg class="w-3.5 h-3.5 mr-1.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-            {size}
-          </span>
+          <span>{size}</span>
         )}
+        {size && time && <span class="text-gray-300 dark:text-gray-600">•</span>}
         {time && (
-          <span class="inline-flex items-center">
-            <svg class="w-3.5 h-3.5 mr-1.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            {time}
-          </span>
+          <span>{time}</span>
         )}
       </div>
     </div>
   </div>
 
-  <div class="mt-auto pt-4">
+  <div class="mt-auto pt-3">
     <a
       href={lanzaoUrl}
       target="_blank"
       rel="noopener noreferrer"
-      class="flex items-center justify-center w-full py-3 px-4 rounded-[1rem] text-[0.9rem] font-semibold text-gray-700 dark:text-gray-200 bg-gray-100/50 dark:bg-gray-800/50 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-300 transition-all duration-300 active:scale-95 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-300"
+      class="flex items-center justify-center w-full py-2 px-4 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-[#27272a] hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 transition-colors active:scale-95"
     >
       直达资源
-      <svg class="w-4 h-4 ml-1.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      <svg class="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
     </a>
   </div>
 </div>
