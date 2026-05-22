@@ -6,6 +6,34 @@ import { loadShareUrl } from 'lanzou-api';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Helper to convert Lanzou's relative time string to a standard YYYY-MM-DD
+function parseLanzouTime(timeStr) {
+  const now = new Date();
+
+  if (timeStr.includes('秒前') || timeStr.includes('分钟前') || timeStr.includes('小时前')) {
+    return now.toISOString().split('T')[0];
+  }
+  if (timeStr.includes('昨天')) {
+    now.setDate(now.getDate() - 1);
+    return now.toISOString().split('T')[0];
+  }
+  if (timeStr.includes('前天')) {
+    now.setDate(now.getDate() - 2);
+    return now.toISOString().split('T')[0];
+  }
+  if (timeStr.includes('天前')) {
+    const days = parseInt(timeStr.replace(/[^0-9]/g, ''), 10) || 0;
+    now.setDate(now.getDate() - days);
+    return now.toISOString().split('T')[0];
+  }
+  // If it's already a date string like "2025-10-28"
+  if (/^\d{4}-\d{2}-\d{2}$/.test(timeStr)) {
+    return timeStr;
+  }
+  // Fallback
+  return now.toISOString().split('T')[0];
+}
+
 async function getData() {
   const dataPath = path.join(__dirname, 'public', 'lanzou_source.json');
   const allDataPath = path.join(__dirname, 'public', 'lanzou_db.json');
@@ -38,11 +66,13 @@ async function getData() {
         const nodes = result.value.nodes || [];
 
         for (const node of nodes) {
-          const now = new Date();
-          const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+          const actualDateStr = parseLanzouTime(node.time);
 
-          // 如果返回了 ico，拼凑完整的图标地址，否则给一个空字符串由前端 fallback 处理
-          const iconUrl = node.ico ? `https://yxlzy.lanzoue.com/ico/${node.ico}` : '';
+          let iconUrl = '';
+          // Only use the ico field if p_ico === 1. Otherwise it's a false inheritance from Lanzou API.
+          if (node.ico && node.p_ico === 1) {
+            iconUrl = `https://image.dmpdmp.com/image/ico/${node.ico}`;
+          }
 
           list.push({
             id: node.id,
@@ -52,7 +82,7 @@ async function getData() {
             categoryId: resource.categoryId, // 绑定大分类（如：软件库）
             lanzaoUrl: node.shareUrl,
             iconUrl: iconUrl,
-            createdAt: todayStr,
+            createdAt: actualDateStr,
             password: ''
           });
         }
