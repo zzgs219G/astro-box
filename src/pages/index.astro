@@ -1,11 +1,211 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import ResourceCard from '../components/ResourceCard.astro';
+import fs from 'fs';
+import path from 'path';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Read data during build time
+const dataPath = path.join(process.cwd(), 'public', 'lanzou_db.json');
+let dbData = { categories: [], tags: [], list: [] };
+
+try {
+  if (fs.existsSync(dataPath)) {
+    const rawData = fs.readFileSync(dataPath, 'utf-8');
+    dbData = JSON.parse(rawData);
+  } else {
+    console.warn("lanzou_db.json not found during build. Please run fetch-lanzou.js first.");
+  }
+} catch (e) {
+  console.error("Error reading lanzou_db.json", e);
+}
+
+const { categories, tags, list } = dbData;
 ---
 
 <Layout>
-	<Welcome />
+  <!-- Search Bar -->
+  <div class="mb-8 max-w-2xl mx-auto">
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+      <input
+        type="search"
+        id="search-input"
+        class="block w-full py-3.5 pl-12 pr-4 text-sm text-gray-900 bg-white dark:bg-[#18181b] border border-gray-200 dark:border-[#27272a] rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none shadow-sm dark:text-white placeholder-gray-400"
+        placeholder="搜索资源..."
+        required
+      >
+    </div>
+  </div>
+
+  <!-- Filter Pills: Categories (Level 1) -->
+  <div class="mb-4">
+    <div class="flex flex-wrap gap-2 justify-center" id="categories-container">
+      {categories.map((cat, index) => (
+        <button
+          class={`filter-btn-category px-5 py-2 rounded-lg text-sm font-medium transition-colors active:scale-95 border
+          ${index === 0
+            ? 'bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700'
+            : 'bg-white dark:bg-[#18181b] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-[#27272a] hover:bg-gray-50 dark:hover:bg-[#27272a]'
+          }`}
+          data-id={cat.id}
+        >
+          {cat.name}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Filter Pills: Tags (Level 2) -->
+  <div class="mb-10">
+    <div class="flex flex-wrap gap-2 justify-center" id="tags-container">
+      {tags.map((tag, index) => (
+        <button
+          class={`filter-btn-tag px-4 py-1.5 rounded-lg text-xs font-medium transition-colors active:scale-95 border
+          ${index === 0
+            ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20'
+            : 'bg-transparent text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-100 dark:hover:bg-[#27272a] hover:text-gray-800 dark:hover:text-gray-200'
+          }`}
+          data-id={tag.id}
+          data-parent={tag.categoryId || 'all'}
+        >
+          {tag.name}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Resource Matrix Grid -->
+  <div id="resource-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {list.map(resource => (
+      <ResourceCard
+        id={resource.id}
+        title={resource.title}
+        description={resource.description}
+        lanzaoUrl={resource.lanzaoUrl}
+        iconUrl={resource.iconUrl}
+        categoryId={resource.categoryId}
+        tagId={resource.tagId}
+      />
+    ))}
+  </div>
+
+  <!-- Empty State (Hidden by default) -->
+  <div id="empty-state" class="hidden py-20 text-center">
+    <div class="text-6xl mb-4">📭</div>
+    <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">未找到相关资源</h3>
+    <p class="text-gray-500 dark:text-gray-400">请尝试更换筛选条件或搜索关键词</p>
+  </div>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Elements
+      const catBtns = document.querySelectorAll('.filter-btn-category');
+      const tagBtns = document.querySelectorAll('.filter-btn-tag');
+      const cards = document.querySelectorAll('.resource-card');
+      const searchInput = document.getElementById('search-input');
+      const emptyState = document.getElementById('empty-state');
+
+      // State
+      let currentCategory = catBtns.length > 0 ? catBtns[0].getAttribute('data-id') : 'all';
+      let currentTag = 'all';
+      let searchQuery = '';
+
+      // Style configurations for active/inactive state
+      const catActiveClasses = ['bg-indigo-600', 'text-white', 'border-indigo-600', 'hover:bg-indigo-700'];
+      const catInactiveClasses = ['bg-white', 'dark:bg-[#18181b]', 'text-gray-600', 'dark:text-gray-300', 'border-gray-200', 'dark:border-[#27272a]', 'hover:bg-gray-50', 'dark:hover:bg-[#27272a]'];
+
+      const tagActiveClasses = ['bg-indigo-50', 'dark:bg-indigo-500/10', 'text-indigo-600', 'dark:text-indigo-400', 'border-indigo-200', 'dark:border-indigo-500/20'];
+      const tagInactiveClasses = ['bg-transparent', 'text-gray-500', 'dark:text-gray-400', 'border-transparent', 'hover:bg-gray-100', 'dark:hover:bg-[#27272a]', 'hover:text-gray-800', 'dark:hover:text-gray-200'];
+
+      function updateUI() {
+        // 1. Update Category Buttons
+        catBtns.forEach(btn => {
+          const id = btn.getAttribute('data-id');
+          if (id === currentCategory) {
+            btn.classList.remove(...catInactiveClasses);
+            btn.classList.add(...catActiveClasses);
+          } else {
+            btn.classList.remove(...catActiveClasses);
+            btn.classList.add(...catInactiveClasses);
+          }
+        });
+
+        // 2. Update Tag Buttons (Visibility & Active State)
+        let visibleTagCount = 0;
+        tagBtns.forEach(btn => {
+          const id = btn.getAttribute('data-id');
+          const parent = btn.getAttribute('data-parent');
+
+          // "All" tag is always visible. Other tags depend on the current category
+          if (id === 'all' || currentCategory === 'all' || parent === currentCategory) {
+            btn.classList.remove('hidden');
+            visibleTagCount++;
+
+            if (id === currentTag) {
+              btn.classList.remove(...tagInactiveClasses);
+              btn.classList.add(...tagActiveClasses);
+            } else {
+              btn.classList.remove(...tagActiveClasses);
+              btn.classList.add(...tagInactiveClasses);
+            }
+          } else {
+            btn.classList.add('hidden');
+          }
+        });
+
+        // 3. Update Cards
+        let visibleCardCount = 0;
+        cards.forEach(card => {
+          const cat = card.getAttribute('data-category');
+          const tag = card.getAttribute('data-tag');
+          const title = card.getAttribute('data-title');
+
+          const matchCategory = currentCategory === 'all' || cat === currentCategory;
+          const matchTag = currentTag === 'all' || tag === currentTag;
+          const matchSearch = searchQuery === '' || title.includes(searchQuery);
+
+          if (matchCategory && matchTag && matchSearch) {
+            card.classList.remove('hidden');
+            visibleCardCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        // 4. Show/Hide Empty State
+        if (visibleCardCount === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+      }
+
+      // Event Listeners
+      catBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          currentCategory = e.currentTarget.getAttribute('data-id');
+          // Reset tag to 'all' when category changes
+          currentTag = 'all';
+          updateUI();
+        });
+      });
+
+      tagBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          currentTag = e.currentTarget.getAttribute('data-id');
+          updateUI();
+        });
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.toLowerCase().trim();
+        updateUI();
+      });
+
+      // Initial render
+      updateUI();
+    });
+  </script>
 </Layout>
