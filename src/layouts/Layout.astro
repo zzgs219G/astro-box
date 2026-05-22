@@ -10,6 +10,13 @@ import '../styles/global.css';
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>聚合资源网</title>
+    <script is:inline>
+      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
   </head>
   <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300 antialiased font-sans flex flex-col min-h-screen">
     <nav class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 dark:bg-gray-900/70 border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors duration-300">
@@ -39,16 +46,15 @@ import '../styles/global.css';
     </footer>
 
     <script is:inline>
-      // Determine initial theme
+      // Toggle theme icons and state
       const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
       const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
       const themeToggleBtn = document.getElementById('theme-toggle');
 
-      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
+      // Set initial icon based on theme set in <head>
+      if (document.documentElement.classList.contains('dark')) {
           themeToggleLightIcon.classList.remove('hidden');
       } else {
-          document.documentElement.classList.remove('dark');
           themeToggleDarkIcon.classList.remove('hidden');
       }
 

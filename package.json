@@ -16,8 +16,5 @@
     "astro": "^6.3.7",
     "lanzou-api": "^0.1.8",
     "tailwindcss": "^4.3.0"
-  },
-  "devDependencies": {
-    "playwright": "^1.60.0"
   }
 }
