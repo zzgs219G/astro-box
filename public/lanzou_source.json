@@ -1,0 +1,24 @@
+{
+  "categories": [
+    { "id": "all", "name": "全部" },
+    { "id": "software", "name": "软件库" }
+  ],
+  "resources": [
+    {
+      "id": "1",
+      "title": "学习资料",
+      "description": "资源均来自网络收集",
+      "categoryId": "software",
+      "lanzaoUrl": "https://yxlzy.lanzoue.com/b00wmbo4oj",
+      "createdAt": "2026-05-16"
+    },
+    {
+      "id": "2",
+      "title": "夕新软件库",
+      "description": "将简盒分享推荐给亲朋好友",
+      "categoryId": "software",
+      "lanzaoUrl": "https://yxlzy.lanzoue.com/b00wmhvejc",
+      "createdAt": "2026-05-16"
+    }
+  ]
+}
