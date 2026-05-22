@@ -1,2 +1,58 @@
 @import "tailwindcss";
 @custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-primary-50: oklch(0.97 0.015 var(--hue));
+  --color-primary-100: oklch(0.93 0.03 var(--hue));
+  --color-primary-200: oklch(0.88 0.06 var(--hue));
+  --color-primary-300: oklch(0.80 0.10 var(--hue));
+  --color-primary-400: oklch(0.74 0.14 var(--hue));
+  --color-primary-500: oklch(0.65 0.18 var(--hue));
+  --color-primary-600: oklch(0.57 0.18 var(--hue));
+  --color-primary-700: oklch(0.49 0.16 var(--hue));
+  --color-primary-800: oklch(0.42 0.14 var(--hue));
+  --color-primary-900: oklch(0.37 0.12 var(--hue));
+  --color-primary-950: oklch(0.28 0.09 var(--hue));
+
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@layer base {
+  :root {
+    /* Base hue for the theme, e.g., 250 (Indigo), 210 (Blue), 150 (Green) */
+    --hue: 250;
+  }
+
+  /* Smooth selection */
+  ::selection {
+    @apply bg-primary-500/20 text-primary-900 dark:text-primary-100;
+  }
+
+  body {
+    /* Ensure a buttery smooth transition on body */
+    @apply bg-[#f4f4f5] text-gray-800 dark:bg-[#0e0e11] dark:text-gray-200 antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Scrollbar styles for a cleaner look */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-600;
+  }
+}
+
+/* View Transitions base animations */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
