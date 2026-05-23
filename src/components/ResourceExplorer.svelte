@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { flip } from 'svelte/animate';
-  import { fade } from 'svelte/transition';
+    import { fade } from 'svelte/transition';
   import type { Category, Tag, ResourceItem } from '../types';
   import ResourceCard from './ResourceCard.svelte';
 
@@ -88,14 +87,14 @@
     </div>
   </div>
 
-  <!-- Resource Matrix Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[500px]" style="content-visibility: auto;">
-    {#each filteredList as resource (resource.id)}
-      <div in:fade={{ duration: 200, delay: 50 }} out:fade={{ duration: 100 }} animate:flip={{ duration: 300 }}>
+  <!-- Resource Matrix Grid (Macro Transition) -->
+  {#key `${currentCategory}-${currentTag}-${searchQuery}`}
+    <div in:fade={{ duration: 300, delay: 150 }} out:fade={{ duration: 150 }} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[500px]" style="content-visibility: auto;">
+      {#each filteredList as resource (resource.id)}
         <ResourceCard {resource} />
-      </div>
-    {/each}
-  </div>
+      {/each}
+    </div>
+  {/key}
 
   <!-- Empty State -->
   {#if filteredList.length === 0}
