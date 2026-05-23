@@ -1,18 +1,34 @@
 {
   "list": [
     {
-      "id": "tool-internal-1",
-      "title": "🖼️ 本地图片极速压缩",
-      "description": "基于浏览器纯前端压缩，100%安全不传服务器",
+      "id": "tool-image-compress",
+      "title": "🖼️ 图片压缩",
+      "description": "调节质量滑块，本地压缩 JPG/PNG，安全不上传",
       "lanzaoUrl": "/tools/image-compress",
       "categoryId": "toolbox",
       "tagId": "all"
     },
     {
-      "id": "tool-internal-2",
-      "title": "🔐 MD5 文本加密工具",
-      "description": "本地字符串哈希散列算法，极客常用工具",
-      "lanzaoUrl": "/tools/md5",
+      "id": "tool-image-webp",
+      "title": "🔄 图片格式转换",
+      "description": "JPG / PNG / WebP 互转，带质量控制，纯本地处理",
+      "lanzaoUrl": "/tools/image-convert",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    },
+    {
+      "id": "tool-image-base64",
+      "title": "📋 图片转 Base64",
+      "description": "上传图片输出 Base64 字符串，支持复制和下载",
+      "lanzaoUrl": "/tools/image-base64",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    },
+    {
+      "id": "tool-image-watermark",
+      "title": "💧 图片加水印",
+      "description": "本地添加文字水印，自定义位置、颜色、透明度",
+      "lanzaoUrl": "/tools/image-watermark",
       "categoryId": "toolbox",
       "tagId": "all"
     }
