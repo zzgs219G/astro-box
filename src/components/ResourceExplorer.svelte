@@ -2,6 +2,7 @@
     import { fade } from 'svelte/transition';
   import type { Category, Tag, ResourceItem } from '../types';
   import ResourceCard from './ResourceCard.svelte';
+  import { searchQueryStore } from '../store';
 
   let { categories = [], tags = [], list = [] } = $props<{
     categories: Category[];
@@ -9,9 +10,12 @@
     list: ResourceItem[];
   }>();
 
-  let currentCategory = $state(categories.length > 0 ? categories[0].id : 'all');
+  let currentCategory = $state('toolbox');
   let currentTag = $state('all');
   let searchQuery = $state('');
+  searchQueryStore.subscribe(value => {
+    searchQuery = value;
+  });
 
   let filteredTags = $derived(
     tags.filter(tag => tag.id === 'all' || currentCategory === 'all' || tag.categoryId === currentCategory)
@@ -37,22 +41,6 @@
 </script>
 
 <div>
-  <!-- Search Bar -->
-  <div class="mb-10 max-w-xl mx-auto">
-    <div class="relative group">
-      <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none opacity-50 group-focus-within:opacity-100 group-focus-within:text-primary-500 transition-all">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-      </div>
-      <input
-        type="search"
-        bind:value={searchQuery}
-        class="block w-full py-3 pl-11 pr-4 text-sm text-gray-900 bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-gray-200/50 dark:border-white/5 rounded-full focus:ring-1 focus:ring-primary-500/30 focus:border-primary-500/50 transition-all outline-none shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] dark:text-white placeholder-gray-400"
-        placeholder="搜索资源..."
-        autocomplete="off"
-      >
-    </div>
-  </div>
-
   <!-- Filter Pills: Categories (Level 1) -->
   <div class="mb-5">
     <div class="flex flex-wrap gap-2.5 justify-center">
@@ -70,6 +58,7 @@
     </div>
   </div>
 
+  {#if currentCategory !== 'toolbox'}
   <!-- Filter Pills: Tags (Level 2) -->
   <div class="mb-12">
     <div class="flex flex-wrap gap-2 justify-center min-h-[32px]">
@@ -86,10 +75,11 @@
       {/each}
     </div>
   </div>
+  {/if}
 
   <!-- Resource Matrix Grid (Macro Transition) -->
   {#key `${currentCategory}-${currentTag}`}
-    <div in:fade={{ duration: 300, delay: 150 }} out:fade={{ duration: 150 }} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[500px]" style="content-visibility: auto;">
+    <div in:fade={{ duration: 250, delay: 100 }} out:fade={{ duration: 100 }} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[500px]" style="content-visibility: auto;">
       {#if filteredList.length > 0}
         {#each filteredList as resource (resource.id)}
           <ResourceCard {resource} />

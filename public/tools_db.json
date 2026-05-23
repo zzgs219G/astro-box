@@ -1,0 +1,20 @@
+{
+  "list": [
+    {
+      "id": "tool-1",
+      "title": "🖼️ 极速图片压缩",
+      "description": "本地纯前端压缩，安全不传服务器",
+      "lanzaoUrl": "https://tinypng.com",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    },
+    {
+      "id": "tool-2",
+      "title": "🔐 MD5 文本加密",
+      "description": "极客常用文本哈希散列工具",
+      "lanzaoUrl": "https://cmd5.com",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    }
+  ]
+}
