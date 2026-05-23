@@ -1,7 +1,7 @@
 <script lang="ts">
   let workspaceOpen = $state(false);
   let originalFile = $state<File | null>(null);
-  let originalImage = new Image();
+  let originalImage = $state<HTMLImageElement | null>(null); // 🌟 修复：初始不实例化
   let resultUrl = $state('');
   let currentPosition = $state('center');
   
@@ -19,15 +19,19 @@
     originalFile = file;
     workspaceOpen = true;
     const url = URL.createObjectURL(file);
-    originalImage.onload = () => {
+    
+    // 🌟 修复：只在浏览器环境下，即用户上传文件后才去创建 Image 对象
+    const img = new Image();
+    img.onload = () => {
+      originalImage = img;
       drawWatermark();
       URL.revokeObjectURL(url);
     };
-    originalImage.src = url;
+    img.src = url;
   }
 
   function drawWatermark() {
-    if (!originalFile || !originalImage.src) return;
+    if (!originalFile || !originalImage || !originalImage.src) return;
     const canvas = document.createElement('canvas');
     canvas.width = originalImage.width;
     canvas.height = originalImage.height;
