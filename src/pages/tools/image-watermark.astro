@@ -289,6 +289,5 @@ import Layout from '../../layouts/Layout.astro';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', init);
-  document.addEventListener('swup:page:view', init);
+  (window as any).__pageInit = init;
 </script>

@@ -111,12 +111,25 @@ import SearchMask from '../components/SearchMask.svelte';
         });
       }
 
+      function tryInitPage() {
+        const initFn = (window as any).__pageInit;
+        if (typeof initFn === 'function') {
+          initFn();
+        }
+      }
+
       // Run on initial load
       setupThemeToggle();
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', tryInitPage);
+      } else {
+        tryInitPage();
+      }
 
       // Run after every Swup page transition
       swup.hooks.on('page:view', () => {
         setupThemeToggle();
+        tryInitPage();
       });
     </script>
   </body>
