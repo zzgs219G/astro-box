@@ -55,14 +55,24 @@
   </div>
 
   <div class="mt-auto pt-2">
-    <a
-      href={resource.lanzaoUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="flex items-center justify-center w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-zinc-800/50 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all duration-300 "
-    >
-      直达资源
-      <Icon icon="lucide:arrow-right" class="w-3.5 h-3.5 ml-1.5 opacity-70 transition-all duration-300 group-hover:opacity-100" />
-    </a>
+    {#if resource.categoryId === 'toolbox'}
+      <a
+        href={resource.lanzaoUrl}
+        class="flex items-center justify-center w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-zinc-800/50 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all duration-300"
+      >
+        运行工具
+        <Icon icon="lucide:play" class="w-3.5 h-3.5 ml-1.5 opacity-70 transition-all duration-300 group-hover:opacity-100" />
+      </a>
+    {:else}
+      <a
+        href={resource.lanzaoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center justify-center w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-zinc-800/50 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all duration-300 "
+      >
+        直达资源
+        <Icon icon="lucide:arrow-right" class="w-3.5 h-3.5 ml-1.5 opacity-70 transition-all duration-300 group-hover:opacity-100" />
+      </a>
+    {/if}
   </div>
 </div>
