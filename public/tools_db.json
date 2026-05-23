@@ -1,0 +1,20 @@
+{
+  "list": [
+    {
+      "id": "tool-internal-1",
+      "title": "🖼️ 本地图片极速压缩",
+      "description": "基于浏览器纯前端压缩，100%安全不传服务器",
+      "lanzaoUrl": "/tools/image-compress",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    },
+    {
+      "id": "tool-internal-2",
+      "title": "🔐 MD5 文本加密工具",
+      "description": "本地字符串哈希散列算法，极客常用工具",
+      "lanzaoUrl": "/tools/md5",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    }
+  ]
+}

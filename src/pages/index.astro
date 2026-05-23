@@ -3,15 +3,25 @@ import Layout from '../layouts/Layout.astro';
 import ResourceExplorer from '../components/ResourceExplorer.svelte';
 import fs from 'fs';
 import path from 'path';
-import type { Database } from '../types';
+import type { Database, ResourceItem } from '../types';
 
-// Read data during build time
-const dataPath = path.join(process.cwd(), 'public', 'lanzou_db.json');
+// Hardcoded Categories Priority
+const categories = [
+  { id: "toolbox", name: "🧰 工具箱" },
+  { id: "all", name: "全部资源" },
+  { id: "software", name: "软件库" }
+];
+
+// Read databases during build time
+const lanzouPath = path.join(process.cwd(), 'public', 'lanzou_db.json');
+const toolsPath = path.join(process.cwd(), 'public', 'tools_db.json');
+
 let dbData: Database = { categories: [], tags: [], list: [] };
+let toolsList: ResourceItem[] = [];
 
 try {
-  if (fs.existsSync(dataPath)) {
-    const rawData = fs.readFileSync(dataPath, 'utf-8');
+  if (fs.existsSync(lanzouPath)) {
+    const rawData = fs.readFileSync(lanzouPath, 'utf-8');
     dbData = JSON.parse(rawData);
   } else {
     console.warn("lanzou_db.json not found during build. Please run fetch-lanzou.js first.");
@@ -20,7 +30,20 @@ try {
   console.error("Error reading lanzou_db.json", e);
 }
 
-const { categories, tags, list } = dbData;
+try {
+  if (fs.existsSync(toolsPath)) {
+    const rawData = fs.readFileSync(toolsPath, 'utf-8');
+    const toolsDb = JSON.parse(rawData);
+    if (toolsDb && toolsDb.list) {
+      toolsList = toolsDb.list;
+    }
+  }
+} catch (e) {
+  console.error("Error reading tools_db.json", e);
+}
+
+const { tags, list: lanzouList } = dbData;
+const mergedList = [...toolsList, ...lanzouList];
 ---
 
 <Layout>
@@ -28,6 +51,6 @@ const { categories, tags, list } = dbData;
     client:load
     categories={categories}
     tags={tags}
-    list={list}
+    list={mergedList}
   />
 </Layout>
