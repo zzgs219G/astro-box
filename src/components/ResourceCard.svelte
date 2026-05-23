@@ -26,9 +26,9 @@
   let imgError = $state(false);
 </script>
 
-<div class="resource-card group flex flex-col bg-white/60 dark:bg-[#18181b]/60 backdrop-blur-sm rounded-[1.25rem] p-6 border border-gray-200/50 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-primary-500/5 hover:-translate-y-1 transition-all duration-300">
+<div class="resource-card group flex flex-col bg-white/60 dark:bg-[#18181b]/60 backdrop-blur-sm rounded-[1.25rem] p-6 border border-gray-200/50 dark:border-white/5 shadow-sm transition-all duration-300">
   <div class="flex items-start space-x-4 mb-5">
-    <div class="flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl bg-gray-50/80 dark:bg-white/5 text-2xl overflow-hidden transition-transform duration-500 group-hover:scale-110">
+    <div class="flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl bg-gray-50/80 dark:bg-white/5 text-2xl overflow-hidden transition-transform duration-500 group-hover:opacity-80">
       {#if resource.iconUrl && !imgError}
         <img src={resource.iconUrl} alt="icon" class="w-full h-full object-cover" onerror={() => imgError = true} />
       {:else}
@@ -58,10 +58,10 @@
       href={resource.lanzaoUrl}
       target="_blank"
       rel="noopener noreferrer"
-      class="flex items-center justify-center w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all duration-300 active:scale-95"
+      class="flex items-center justify-center w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-all duration-300 "
     >
       直达资源
-      <svg class="w-3.5 h-3.5 ml-1.5 opacity-70 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      <svg class="w-3.5 h-3.5 ml-1.5 opacity-70 transition-all duration-300 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
     </a>
   </div>
 </div>
