@@ -7,7 +7,7 @@ import SearchMask from '../components/SearchMask.svelte';
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link class="cursor-pointer" rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
 <meta name="generator" content={Astro.generator} />
 <title>聚合资源网</title>
@@ -49,23 +49,9 @@ initTheme();
 import Swup from 'swup';
 import SwupFadeTheme from '@swup/fade-theme';
 
-// 初始化 Swup
 const swup = new Swup({
 plugins: [new SwupFadeTheme()]
 });
-
-swup.hooks.on('content:replace', () => {
-  const container = document.getElementById('swup');
-  if (!container) return;
-  const scripts = container.querySelectorAll('script');
-  scripts.forEach(oldScript => {
-    const newScript = document.createElement('script');
-    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-    newScript.textContent = oldScript.textContent;
-    oldScript.parentNode?.replaceChild(newScript, oldScript);
-  });
-});
-
 
 function setupThemeToggle() {
 const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
@@ -110,22 +96,8 @@ localStorage.setItem('color-theme', 'dark');
 });
 }
 
-// 📣 发送页面发生切换并成功加载的全局口令通知
-function notifyPageLoad() {
-document.dispatchEvent(new CustomEvent('page-changed'));
-}
-
-// 首次进入网页执行
-document.addEventListener('DOMContentLoaded', () => {
-setupThemeToggle();
-notifyPageLoad();
-});
-
-// 每次点击 Swup 转场完成后执行
-swup.hooks.on('page:view', () => {
-setupThemeToggle();
-notifyPageLoad();
-});
+document.addEventListener('DOMContentLoaded', setupThemeToggle);
+swup.hooks.on('page:view', setupThemeToggle);
 </script>
 </body>
 </html>
