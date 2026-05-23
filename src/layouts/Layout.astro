@@ -120,11 +120,8 @@ import SearchMask from '../components/SearchMask.svelte';
 
       // Run on initial load
       setupThemeToggle();
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', tryInitPage);
-      } else {
-        tryInitPage();
-      }
+      // 用 setTimeout 0 确保工具页面脚本先完成赋值
+      setTimeout(tryInitPage, 0);
 
       // Run after every Swup page transition
       swup.hooks.on('page:view', () => {
