@@ -54,6 +54,19 @@ const swup = new Swup({
 plugins: [new SwupFadeTheme()]
 });
 
+swup.hooks.on('content:replace', () => {
+  const container = document.getElementById('swup');
+  if (!container) return;
+  const scripts = container.querySelectorAll('script');
+  scripts.forEach(oldScript => {
+    const newScript = document.createElement('script');
+    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+    newScript.textContent = oldScript.textContent;
+    oldScript.parentNode?.replaceChild(newScript, oldScript);
+  });
+});
+
+
 function setupThemeToggle() {
 const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
 const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');

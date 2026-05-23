@@ -2,185 +2,172 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 <Layout>
-<div class="max-w-4xl mx-auto py-12 px-4">
-<div class="text-center mb-10">
-<h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">🖼️ 图片压缩</h1>
-<p class="text-gray-500 dark:text-gray-400">调节质量滑块，本地压缩 JPG/PNG，安全不上传</p>
-</div>
-<div class="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-sm rounded-[1.25rem] p-8 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
-<div
-id="dropzone"
-class="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl p-12 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors duration-300"
->
-<div class="text-4xl mb-4">📤</div>
-<p class="text-gray-600 dark:text-gray-300 font-medium">点击或拖拽上传 JPG/PNG 图片</p>
-</div>
-<input type="file" id="fileInput" accept="image/jpeg, image/png" class="hidden" />
-<div id="workspace" class="hidden mt-8 space-y-8">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-<div>
-<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">原始图片 <span id="originalSize" class="text-gray-900 dark:text-white font-bold ml-2"></span></h3>
-<div class="bg-gray-100 dark:bg-zinc-800 rounded-lg p-2 aspect-video flex items-center justify-center overflow-hidden">
-<img id="originalPreview" class="max-w-full max-h-full object-contain" />
-</div>
-</div>
-<div>
-<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">压缩后 <span id="compressedSize" class="text-primary-600 dark:text-primary-400 font-bold ml-2"></span></h3>
-<div class="bg-gray-100 dark:bg-zinc-800 rounded-lg p-2 aspect-video flex items-center justify-center overflow-hidden">
-<img id="compressedPreview" class="max-w-full max-h-full object-contain" />
-</div>
-</div>
-</div>
-<div class="space-y-4">
-<div class="flex items-center justify-between">
-<label class="text-sm font-medium text-gray-700 dark:text-gray-300">压缩质量</label>
-<span id="qualityValue" class="text-sm text-gray-500 dark:text-gray-400">80%</span>
-</div>
-<input
-type="range"
-id="quality"
-min="0.1"
-max="1"
-step="0.1"
-value="0.8"
-class="w-full accent-primary-600"
-/>
-</div>
-<div class="flex justify-center pt-4">
-<button
-id="downloadBtn"
-class="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-colors duration-300 shadow-sm"
->
-下载压缩图片
-</button>
-</div>
-</div>
-</div>
-</div>
+  <div class="max-w-4xl mx-auto py-12 px-4">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">🖼️ 图片压缩</h1>
+      <p class="text-gray-500 dark:text-gray-400">调节质量滑块，本地压缩 JPG/PNG，安全不上传</p>
+    </div>
+
+    <div class="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-sm rounded-[1.25rem] p-8 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
+      <div
+        id="dropzone"
+        class="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl p-12 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors duration-300"
+      >
+        <div class="text-4xl mb-4">📤</div>
+        <p class="text-gray-600 dark:text-gray-300 font-medium">点击或拖拽上传 JPG/PNG 图片</p>
+      </div>
+
+      <input type="file" id="fileInput" accept="image/jpeg, image/png" class="hidden" />
+
+      <div id="workspace" class="hidden mt-8 space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">原始图片 <span id="originalSize" class="text-gray-900 dark:text-white font-bold ml-2"></span></h3>
+            <div class="bg-gray-100 dark:bg-zinc-800 rounded-lg p-2 aspect-video flex items-center justify-center overflow-hidden">
+              <img id="originalPreview" class="max-w-full max-h-full object-contain" />
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">压缩后 <span id="compressedSize" class="text-primary-600 dark:text-primary-400 font-bold ml-2"></span></h3>
+            <div class="bg-gray-100 dark:bg-zinc-800 rounded-lg p-2 aspect-video flex items-center justify-center overflow-hidden">
+              <img id="compressedPreview" class="max-w-full max-h-full object-contain" />
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">压缩质量</label>
+            <span id="qualityValue" class="text-sm text-gray-500 dark:text-gray-400">80%</span>
+          </div>
+          <input
+            type="range"
+            id="quality"
+            min="0.1"
+            max="1"
+            step="0.1"
+            value="0.8"
+            class="w-full accent-primary-600"
+          />
+        </div>
+
+        <div class="flex justify-center pt-4">
+          <button
+            id="downloadBtn"
+            class="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-colors duration-300 shadow-sm"
+          >
+            下载压缩图片
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function() {
+      let originalFile = null;
+      let compressedBlob = null;
+      let compressedUrl = null;
+      let originalUrl = null;
+
+      const dropzone = document.getElementById('dropzone');
+      const fileInput = document.getElementById('fileInput');
+      const workspace = document.getElementById('workspace');
+      const originalPreview = document.getElementById('originalPreview');
+      const compressedPreview = document.getElementById('compressedPreview');
+      const qualityInput = document.getElementById('quality');
+      const qualityValue = document.getElementById('qualityValue');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const originalSizeText = document.getElementById('originalSize');
+      const compressedSizeText = document.getElementById('compressedSize');
+
+      if (!dropzone || !fileInput || !workspace || !qualityInput || !downloadBtn || !qualityValue || !compressedPreview) return;
+
+      function formatSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      function handleFile(file) {
+        if (!file.type.match(/image\/(jpeg|png)/)) {
+          alert('仅支持 JPG 和 PNG 格式');
+          return;
+        }
+        originalFile = file;
+        dropzone.classList.add('hidden');
+        workspace.classList.remove('hidden');
+        if (originalUrl) URL.revokeObjectURL(originalUrl);
+        originalUrl = URL.createObjectURL(file);
+        originalPreview.src = originalUrl;
+        originalSizeText.textContent = formatSize(file.size);
+        compress();
+      }
+
+      function compress() {
+        if (!originalFile || !originalUrl) return;
+        const quality = parseFloat(qualityInput.value);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+          if (originalFile.type === 'image/jpeg') {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          ctx.drawImage(img, 0, 0);
+          const mimeType = originalFile.type;
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) return;
+              compressedBlob = blob;
+              if (compressedUrl) URL.revokeObjectURL(compressedUrl);
+              compressedUrl = URL.createObjectURL(blob);
+              compressedPreview.src = compressedUrl;
+              compressedSizeText.textContent = formatSize(blob.size);
+            },
+            mimeType,
+            mimeType === 'image/png' ? undefined : quality
+          );
+        };
+        img.src = originalUrl;
+      }
+
+      dropzone.addEventListener('click', () => fileInput.click());
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      });
+      dropzone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      });
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+        const file = e.dataTransfer?.files[0];
+        if (file) handleFile(file);
+      });
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files?.[0];
+        if (file) handleFile(file);
+      });
+      qualityInput.addEventListener('input', () => {
+        qualityValue.textContent = `${Math.round(parseFloat(qualityInput.value) * 100)}%`;
+        compress();
+      });
+      downloadBtn.addEventListener('click', () => {
+        if (!compressedUrl || !originalFile) return;
+        const a = document.createElement('a');
+        a.href = compressedUrl;
+        a.download = `compressed_${originalFile.name}`;
+        a.click();
+      });
+    })();
+  </script>
 </Layout>
-<script>
-let originalFile: File | null = null;
-let compressedBlob: Blob | null = null;
-let compressedUrl: string | null = null;
-let originalUrl: string | null = null;
-let dropzone: HTMLElement | null = null;
-let fileInput: HTMLInputElement | null = null;
-let workspace: HTMLElement | null = null;
-let originalPreview: HTMLImageElement | null = null;
-let compressedPreview: HTMLImageElement | null = null;
-let qualityInput: HTMLInputElement | null = null;
-let qualityValue: HTMLElement | null = null;
-let downloadBtn: HTMLElement | null = null;
-let originalSizeText: HTMLElement | null = null;
-let compressedSizeText: HTMLElement | null = null;
-
-function formatSize(bytes: number) {
-if (bytes === 0) return '0 B';
-const k = 1024;
-const sizes = ['B', 'KB', 'MB', 'GB'];
-const i = Math.floor(Math.log(bytes) / Math.log(k));
-return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function handleFile(file: File) {
-if (!dropzone || !workspace || !originalPreview || !originalSizeText) return;
-if (!file.type.match(/image\/(jpeg|png)/)) {
-alert('仅支持 JPG 和 PNG 格式');
-return;
-}
-originalFile = file;
-dropzone.classList.add('hidden');
-workspace.classList.remove('hidden');
-if (originalUrl) URL.revokeObjectURL(originalUrl);
-originalUrl = URL.createObjectURL(file);
-originalPreview.src = originalUrl;
-originalSizeText.textContent = formatSize(file.size);
-compress();
-}
-
-function compress() {
-if (!originalFile || !originalUrl || !qualityInput || !compressedPreview || !compressedSizeText) return;
-const quality = parseFloat(qualityInput.value);
-const img = new Image();
-img.onload = () => {
-const canvas = document.createElement('canvas');
-canvas.width = img.width;
-canvas.height = img.height;
-const ctx = canvas.getContext('2d');
-if (!ctx) return;
-if (originalFile!.type === 'image/jpeg') {
-ctx.fillStyle = '#fff';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-ctx.drawImage(img, 0, 0);
-const mimeType = originalFile!.type;
-canvas.toBlob(
-(blob) => {
-if (!blob) return;
-compressedBlob = blob;
-if (compressedUrl) URL.revokeObjectURL(compressedUrl);
-compressedUrl = URL.createObjectURL(blob);
-compressedPreview!.src = compressedUrl;
-compressedSizeText!.textContent = formatSize(blob.size);
-},
-mimeType,
-mimeType === 'image/png' ? undefined : quality
-);
-};
-img.src = originalUrl;
-}
-
-function init() {
-dropzone = document.getElementById('dropzone');
-fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
-workspace = document.getElementById('workspace');
-originalPreview = document.getElementById('originalPreview') as HTMLImageElement | null;
-compressedPreview = document.getElementById('compressedPreview') as HTMLImageElement | null;
-qualityInput = document.getElementById('quality') as HTMLInputElement | null;
-qualityValue = document.getElementById('qualityValue');
-downloadBtn = document.getElementById('downloadBtn');
-originalSizeText = document.getElementById('originalSize');
-compressedSizeText = document.getElementById('compressedSize');
-
-if (!dropzone || !fileInput || !workspace || !qualityInput || !downloadBtn || !qualityValue || !compressedPreview) return;
-
-dropzone.addEventListener('click', () => fileInput?.click());
-dropzone.addEventListener('dragover', (e) => {
-e.preventDefault();
-dropzone?.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-});
-dropzone.addEventListener('dragleave', (e) => {
-e.preventDefault();
-dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-});
-dropzone.addEventListener('drop', (e) => {
-e.preventDefault();
-dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-const file = e.dataTransfer?.files[0];
-if (file) handleFile(file);
-});
-fileInput.addEventListener('change', (e) => {
-const file = fileInput?.files?.[0];
-if (file) handleFile(file);
-});
-qualityInput.addEventListener('input', (e) => {
-if (!qualityInput || !qualityValue) return;
-qualityValue.textContent = `${Math.round(parseFloat(qualityInput.value) * 100)}%`;
-compress();
-});
-downloadBtn.addEventListener('click', () => {
-if (!compressedUrl || !originalFile) return;
-const a = document.createElement('a');
-a.href = compressedUrl;
-a.download = `compressed_${originalFile.name}`;
-a.click();
-});
-}
-
-// 👂 接收 Layout 传来的全局重载命令
-document.addEventListener('page-changed', () => {
-if (document.getElementById('dropzone')) {
-init();
-}
-});
-</script>
