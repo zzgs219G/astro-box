@@ -96,23 +96,25 @@ import Layout from '../../layouts/Layout.astro';
   let originalImage = new Image();
   let resultUrl: string | null = null;
 
-  const dropzone = document.getElementById('dropzone')!;
-  const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-  const workspace = document.getElementById('workspace')!;
-  const previewImage = document.getElementById('previewImage') as HTMLImageElement;
+  let dropzone: HTMLElement | null = null;
+  let fileInput: HTMLInputElement | null = null;
+  let workspace: HTMLElement | null = null;
+  let previewImage: HTMLImageElement | null = null;
 
-  const textInput = document.getElementById('watermarkText') as HTMLInputElement;
-  const colorInput = document.getElementById('watermarkColor') as HTMLInputElement;
-  const opacityInput = document.getElementById('watermarkOpacity') as HTMLInputElement;
-  const sizeInput = document.getElementById('watermarkSize') as HTMLInputElement;
-  const opacityValue = document.getElementById('opacityValue')!;
-  const sizeValue = document.getElementById('sizeValue')!;
-  const posBtns = document.querySelectorAll('.pos-btn');
-  const downloadBtn = document.getElementById('downloadBtn')!;
+  let textInput: HTMLInputElement | null = null;
+  let colorInput: HTMLInputElement | null = null;
+  let opacityInput: HTMLInputElement | null = null;
+  let sizeInput: HTMLInputElement | null = null;
+  let opacityValue: HTMLElement | null = null;
+  let sizeValue: HTMLElement | null = null;
+  let posBtns: NodeListOf<Element> | null = null;
+  let downloadBtn: HTMLElement | null = null;
 
   let currentPosition = 'center';
 
   function handleFile(file: File) {
+    if (!dropzone || !workspace) return;
+
     if (!file.type.startsWith('image/')) {
       alert('请上传图片文件');
       return;
@@ -131,7 +133,7 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   function drawWatermark() {
-    if (!originalFile || !originalImage.src) return;
+    if (!originalFile || !originalImage.src || !textInput || !colorInput || !opacityInput || !sizeInput) return;
 
     const canvas = document.createElement('canvas');
     canvas.width = originalImage.width;
@@ -189,78 +191,104 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   function updatePreview(canvas: HTMLCanvasElement) {
+    if (!previewImage) return;
     canvas.toBlob((blob) => {
       if (!blob) return;
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       resultUrl = URL.createObjectURL(blob);
-      previewImage.src = resultUrl;
+      previewImage!.src = resultUrl;
     }, originalFile?.type || 'image/png', 0.95);
   }
 
-  // Position selection
-  posBtns.forEach(btn => {
-     btn.addEventListener('click', (e) => {
-        const target = e.target as HTMLButtonElement;
-        currentPosition = target.dataset.pos || 'center';
+  function init() {
+    dropzone = document.getElementById('dropzone');
+    fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+    workspace = document.getElementById('workspace');
+    previewImage = document.getElementById('previewImage') as HTMLImageElement | null;
 
-        posBtns.forEach(b => {
-           b.classList.remove('bg-primary-50', 'dark:bg-primary-500/10', 'border-primary-500');
-        });
-        target.classList.add('bg-primary-50', 'dark:bg-primary-500/10', 'border-primary-500');
+    textInput = document.getElementById('watermarkText') as HTMLInputElement | null;
+    colorInput = document.getElementById('watermarkColor') as HTMLInputElement | null;
+    opacityInput = document.getElementById('watermarkOpacity') as HTMLInputElement | null;
+    sizeInput = document.getElementById('watermarkSize') as HTMLInputElement | null;
+    opacityValue = document.getElementById('opacityValue');
+    sizeValue = document.getElementById('sizeValue');
+    posBtns = document.querySelectorAll('.pos-btn');
+    downloadBtn = document.getElementById('downloadBtn');
 
-        drawWatermark();
-     });
-  });
+    if (!dropzone || !fileInput || !workspace || !textInput || !colorInput || !opacityInput || !sizeInput || !opacityValue || !sizeValue || !downloadBtn) return;
 
-  // Inputs
-  textInput.addEventListener('input', drawWatermark);
-  colorInput.addEventListener('input', drawWatermark);
+    // Position selection
+    if (posBtns) {
+      posBtns.forEach(btn => {
+         btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLButtonElement;
+            currentPosition = target.dataset.pos || 'center';
 
-  opacityInput.addEventListener('input', () => {
-    opacityValue.textContent = `${Math.round(parseFloat(opacityInput.value) * 100)}%`;
-    drawWatermark();
-  });
+            if (posBtns) {
+              posBtns.forEach(b => {
+                 b.classList.remove('bg-primary-50', 'dark:bg-primary-500/10', 'border-primary-500');
+              });
+            }
+            target.classList.add('bg-primary-50', 'dark:bg-primary-500/10', 'border-primary-500');
 
-  sizeInput.addEventListener('input', () => {
-    sizeValue.textContent = `${Math.round(parseFloat(sizeInput.value) * 100)}%`;
-    drawWatermark();
-  });
-
-  // Upload
-  dropzone.addEventListener('click', () => fileInput.click());
-
-  dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
-
-  dropzone.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
-
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-    if (e.dataTransfer?.files.length) {
-      handleFile(e.dataTransfer.files[0]);
+            drawWatermark();
+         });
+      });
     }
-  });
 
-  fileInput.addEventListener('change', (e) => {
-    if (fileInput.files?.length) {
-      handleFile(fileInput.files[0]);
-    }
-  });
+    // Inputs
+    textInput.addEventListener('input', drawWatermark);
+    colorInput.addEventListener('input', drawWatermark);
 
-  // Download
-  downloadBtn.addEventListener('click', () => {
-    if (!resultUrl || !originalFile) return;
-    const baseName = originalFile.name.replace(/\.[^/.]+$/, "");
-    const ext = originalFile.name.split('.').pop();
-    const a = document.createElement('a');
-    a.href = resultUrl;
-    a.download = `${baseName}_watermark.${ext}`;
-    a.click();
-  });
+    opacityInput.addEventListener('input', () => {
+      if (!opacityInput || !opacityValue) return;
+      opacityValue.textContent = `${Math.round(parseFloat(opacityInput.value) * 100)}%`;
+      drawWatermark();
+    });
+
+    sizeInput.addEventListener('input', () => {
+      if (!sizeInput || !sizeValue) return;
+      sizeValue.textContent = `${Math.round(parseFloat(sizeInput.value) * 100)}%`;
+      drawWatermark();
+    });
+
+    // Upload
+    dropzone.addEventListener('click', () => fileInput?.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone?.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+    });
+
+    dropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      const file = e.dataTransfer?.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = fileInput?.files?.[0];
+      if (file) handleFile(file);
+    });
+
+    // Download
+    downloadBtn.addEventListener('click', () => {
+      if (!resultUrl || !originalFile) return;
+      const baseName = originalFile.name.replace(/\.[^/.]+$/, "");
+      const ext = originalFile.name.split('.').pop();
+      const a = document.createElement('a');
+      a.href = resultUrl;
+      a.download = `${baseName}_watermark.${ext}`;
+      a.click();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('swup:page:view', init);
 </script>

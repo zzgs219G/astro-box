@@ -51,17 +51,19 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
-  const dropzone = document.getElementById('dropzone')!;
-  const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-  const workspace = document.getElementById('workspace')!;
-  const base64Output = document.getElementById('base64Output') as HTMLTextAreaElement;
-  const stringLength = document.getElementById('stringLength')!;
-  const copyBtn = document.getElementById('copyBtn')!;
-  const downloadBtn = document.getElementById('downloadBtn')!;
+  let dropzone: HTMLElement | null = null;
+  let fileInput: HTMLInputElement | null = null;
+  let workspace: HTMLElement | null = null;
+  let base64Output: HTMLTextAreaElement | null = null;
+  let stringLength: HTMLElement | null = null;
+  let copyBtn: HTMLElement | null = null;
+  let downloadBtn: HTMLElement | null = null;
 
   let currentFileName = 'image';
 
   function handleFile(file: File) {
+    if (!dropzone || !workspace || !base64Output || !stringLength) return;
+
     if (!file.type.startsWith('image/')) {
       alert('请上传图片文件');
       return;
@@ -74,58 +76,71 @@ import Layout from '../../layouts/Layout.astro';
     const reader = new FileReader();
     reader.onload = (e) => {
       const result = e.target?.result as string;
-      base64Output.value = result;
-      stringLength.textContent = `长度: ${result.length}`;
+      base64Output!.value = result;
+      stringLength!.textContent = `长度: ${result.length}`;
     };
     reader.readAsDataURL(file);
   }
 
-  // Event Listeners
-  dropzone.addEventListener('click', () => fileInput.click());
+  function init() {
+    dropzone = document.getElementById('dropzone');
+    fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+    workspace = document.getElementById('workspace');
+    base64Output = document.getElementById('base64Output') as HTMLTextAreaElement | null;
+    stringLength = document.getElementById('stringLength');
+    copyBtn = document.getElementById('copyBtn');
+    downloadBtn = document.getElementById('downloadBtn');
 
-  dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
+    if (!dropzone || !fileInput || !workspace || !base64Output || !stringLength || !copyBtn || !downloadBtn) return;
 
-  dropzone.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
+    // Event Listeners
+    dropzone.addEventListener('click', () => fileInput?.click());
 
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-    if (e.dataTransfer?.files.length) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  });
-
-  fileInput.addEventListener('change', (e) => {
-    if (fileInput.files?.length) {
-      handleFile(fileInput.files[0]);
-    }
-  });
-
-  copyBtn.addEventListener('click', () => {
-    if (!base64Output.value) return;
-    navigator.clipboard.writeText(base64Output.value).then(() => {
-      const originalText = copyBtn.textContent;
-      copyBtn.textContent = '已复制!';
-      setTimeout(() => {
-        copyBtn.textContent = originalText;
-      }, 2000);
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone?.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
     });
-  });
 
-  downloadBtn.addEventListener('click', () => {
-    if (!base64Output.value) return;
-    const blob = new Blob([base64Output.value], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${currentFileName}_base64.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
+    dropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      const file = e.dataTransfer?.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = fileInput?.files?.[0];
+      if (file) handleFile(file);
+    });
+
+    copyBtn.addEventListener('click', () => {
+      if (!base64Output || !base64Output.value || !copyBtn) return;
+      navigator.clipboard.writeText(base64Output.value).then(() => {
+        const originalText = copyBtn!.textContent;
+        copyBtn!.textContent = '已复制!';
+        setTimeout(() => {
+          copyBtn!.textContent = originalText;
+        }, 2000);
+      });
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!base64Output || !base64Output.value) return;
+      const blob = new Blob([base64Output.value], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentFileName}_base64.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('swup:page:view', init);
 </script>

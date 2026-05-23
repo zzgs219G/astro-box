@@ -70,16 +70,16 @@ import Layout from '../../layouts/Layout.astro';
   let compressedUrl: string | null = null;
   let originalUrl: string | null = null;
 
-  const dropzone = document.getElementById('dropzone')!;
-  const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-  const workspace = document.getElementById('workspace')!;
-  const originalPreview = document.getElementById('originalPreview') as HTMLImageElement;
-  const compressedPreview = document.getElementById('compressedPreview') as HTMLImageElement;
-  const qualityInput = document.getElementById('quality') as HTMLInputElement;
-  const qualityValue = document.getElementById('qualityValue')!;
-  const downloadBtn = document.getElementById('downloadBtn')!;
-  const originalSizeText = document.getElementById('originalSize')!;
-  const compressedSizeText = document.getElementById('compressedSize')!;
+  let dropzone: HTMLElement | null = null;
+  let fileInput: HTMLInputElement | null = null;
+  let workspace: HTMLElement | null = null;
+  let originalPreview: HTMLImageElement | null = null;
+  let compressedPreview: HTMLImageElement | null = null;
+  let qualityInput: HTMLInputElement | null = null;
+  let qualityValue: HTMLElement | null = null;
+  let downloadBtn: HTMLElement | null = null;
+  let originalSizeText: HTMLElement | null = null;
+  let compressedSizeText: HTMLElement | null = null;
 
   function formatSize(bytes: number) {
     if (bytes === 0) return '0 B';
@@ -90,6 +90,8 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   function handleFile(file: File) {
+    if (!dropzone || !workspace || !originalPreview || !originalSizeText) return;
+
     if (!file.type.match(/image\/(jpeg|png)/)) {
       alert('仅支持 JPG 和 PNG 格式');
       return;
@@ -108,7 +110,7 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   function compress() {
-    if (!originalFile || !originalUrl) return;
+    if (!originalFile || !originalUrl || !qualityInput || !compressedPreview || !compressedSizeText) return;
 
     const quality = parseFloat(qualityInput.value);
     const img = new Image();
@@ -133,8 +135,8 @@ import Layout from '../../layouts/Layout.astro';
           compressedBlob = blob;
           if (compressedUrl) URL.revokeObjectURL(compressedUrl);
           compressedUrl = URL.createObjectURL(blob);
-          compressedPreview.src = compressedUrl;
-          compressedSizeText.textContent = formatSize(blob.size);
+          compressedPreview!.src = compressedUrl;
+          compressedSizeText!.textContent = formatSize(blob.size);
         },
         mimeType,
         mimeType === 'image/png' ? undefined : quality // quality param only used for jpeg/webp natively but ok
@@ -143,43 +145,60 @@ import Layout from '../../layouts/Layout.astro';
     img.src = originalUrl;
   }
 
-  // Event Listeners
-  dropzone.addEventListener('click', () => fileInput.click());
+  function init() {
+    dropzone = document.getElementById('dropzone');
+    fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+    workspace = document.getElementById('workspace');
+    originalPreview = document.getElementById('originalPreview') as HTMLImageElement | null;
+    compressedPreview = document.getElementById('compressedPreview') as HTMLImageElement | null;
+    qualityInput = document.getElementById('quality') as HTMLInputElement | null;
+    qualityValue = document.getElementById('qualityValue');
+    downloadBtn = document.getElementById('downloadBtn');
+    originalSizeText = document.getElementById('originalSize');
+    compressedSizeText = document.getElementById('compressedSize');
 
-  dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
+    if (!dropzone || !fileInput || !workspace || !qualityInput || !downloadBtn || !qualityValue || !compressedPreview) return;
 
-  dropzone.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
+    // Event Listeners
+    dropzone.addEventListener('click', () => fileInput?.click());
 
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-    if (e.dataTransfer?.files.length) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  });
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone?.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+    });
 
-  fileInput.addEventListener('change', (e) => {
-    if (fileInput.files?.length) {
-      handleFile(fileInput.files[0]);
-    }
-  });
+    dropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+    });
 
-  qualityInput.addEventListener('input', (e) => {
-    qualityValue.textContent = `${Math.round(parseFloat(qualityInput.value) * 100)}%`;
-    compress(); // Debounce might be good but let's keep it simple and responsive
-  });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      const file = e.dataTransfer?.files[0];
+      if (file) handleFile(file);
+    });
 
-  downloadBtn.addEventListener('click', () => {
-    if (!compressedUrl || !originalFile) return;
-    const a = document.createElement('a');
-    a.href = compressedUrl;
-    a.download = `compressed_${originalFile.name}`;
-    a.click();
-  });
+    fileInput.addEventListener('change', (e) => {
+      const file = fileInput?.files?.[0];
+      if (file) handleFile(file);
+    });
+
+    qualityInput.addEventListener('input', (e) => {
+      if (!qualityInput || !qualityValue) return;
+      qualityValue.textContent = `${Math.round(parseFloat(qualityInput.value) * 100)}%`;
+      compress(); // Debounce might be good but let's keep it simple and responsive
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!compressedUrl || !originalFile) return;
+      const a = document.createElement('a');
+      a.href = compressedUrl;
+      a.download = `compressed_${originalFile.name}`;
+      a.click();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('swup:page:view', init);
 </script>

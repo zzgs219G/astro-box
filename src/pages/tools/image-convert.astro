@@ -90,17 +90,17 @@ import Layout from '../../layouts/Layout.astro';
   let convertedUrl: string | null = null;
   let originalUrl: string | null = null;
 
-  const dropzone = document.getElementById('dropzone')!;
-  const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-  const workspace = document.getElementById('workspace')!;
-  const originalPreview = document.getElementById('originalPreview') as HTMLImageElement;
-  const convertedPreview = document.getElementById('convertedPreview') as HTMLImageElement;
-  const qualityInput = document.getElementById('quality') as HTMLInputElement;
-  const qualityValue = document.getElementById('qualityValue')!;
-  const formatInputs = document.querySelectorAll('input[name="format"]');
-  const downloadBtn = document.getElementById('downloadBtn')!;
-  const originalSizeText = document.getElementById('originalSize')!;
-  const convertedSizeText = document.getElementById('convertedSize')!;
+  let dropzone: HTMLElement | null = null;
+  let fileInput: HTMLInputElement | null = null;
+  let workspace: HTMLElement | null = null;
+  let originalPreview: HTMLImageElement | null = null;
+  let convertedPreview: HTMLImageElement | null = null;
+  let qualityInput: HTMLInputElement | null = null;
+  let qualityValue: HTMLElement | null = null;
+  let formatInputs: NodeListOf<HTMLInputElement> | null = null;
+  let downloadBtn: HTMLElement | null = null;
+  let originalSizeText: HTMLElement | null = null;
+  let convertedSizeText: HTMLElement | null = null;
 
   function formatSize(bytes: number) {
     if (bytes === 0) return '0 B';
@@ -111,6 +111,8 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   function handleFile(file: File) {
+    if (!dropzone || !workspace || !originalPreview || !originalSizeText) return;
+
     if (!file.type.match(/image\/(jpeg|png|webp)/)) {
       alert('仅支持 JPG, PNG, WebP 格式');
       return;
@@ -129,10 +131,12 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   function convert() {
-    if (!originalFile || !originalUrl) return;
+    if (!originalFile || !originalUrl || !qualityInput || !convertedPreview || !convertedSizeText) return;
 
     const quality = parseFloat(qualityInput.value);
-    const targetFormat = (document.querySelector('input[name="format"]:checked') as HTMLInputElement).value;
+    const checkedFormat = document.querySelector('input[name="format"]:checked') as HTMLInputElement | null;
+    if (!checkedFormat) return;
+    const targetFormat = checkedFormat.value;
 
     const img = new Image();
     img.onload = () => {
@@ -154,8 +158,8 @@ import Layout from '../../layouts/Layout.astro';
           convertedBlob = blob;
           if (convertedUrl) URL.revokeObjectURL(convertedUrl);
           convertedUrl = URL.createObjectURL(blob);
-          convertedPreview.src = convertedUrl;
-          convertedSizeText.textContent = formatSize(blob.size);
+          convertedPreview!.src = convertedUrl;
+          convertedSizeText!.textContent = formatSize(blob.size);
         },
         targetFormat,
         targetFormat === 'image/png' ? undefined : quality
@@ -164,53 +168,76 @@ import Layout from '../../layouts/Layout.astro';
     img.src = originalUrl;
   }
 
-  // Event Listeners
-  dropzone.addEventListener('click', () => fileInput.click());
+  function init() {
+    dropzone = document.getElementById('dropzone');
+    fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+    workspace = document.getElementById('workspace');
+    originalPreview = document.getElementById('originalPreview') as HTMLImageElement | null;
+    convertedPreview = document.getElementById('convertedPreview') as HTMLImageElement | null;
+    qualityInput = document.getElementById('quality') as HTMLInputElement | null;
+    qualityValue = document.getElementById('qualityValue');
+    formatInputs = document.querySelectorAll('input[name="format"]');
+    downloadBtn = document.getElementById('downloadBtn');
+    originalSizeText = document.getElementById('originalSize');
+    convertedSizeText = document.getElementById('convertedSize');
 
-  dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
+    if (!dropzone || !fileInput || !workspace || !qualityInput || !downloadBtn || !qualityValue || !convertedPreview) return;
 
-  dropzone.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-  });
+    // Event Listeners
+    dropzone.addEventListener('click', () => fileInput?.click());
 
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
-    if (e.dataTransfer?.files.length) {
-      handleFile(e.dataTransfer.files[0]);
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone?.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+    });
+
+    dropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone?.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      const file = e.dataTransfer?.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = fileInput?.files?.[0];
+      if (file) handleFile(file);
+    });
+
+    qualityInput.addEventListener('input', (e) => {
+      if (!qualityInput || !qualityValue) return;
+      qualityValue.textContent = `${Math.round(parseFloat(qualityInput.value) * 100)}%`;
+      convert();
+    });
+
+    if (formatInputs) {
+      formatInputs.forEach(input => {
+        input.addEventListener('change', convert);
+      });
     }
-  });
 
-  fileInput.addEventListener('change', (e) => {
-    if (fileInput.files?.length) {
-      handleFile(fileInput.files[0]);
-    }
-  });
+    downloadBtn.addEventListener('click', () => {
+      if (!convertedUrl || !originalFile) return;
+      const checkedFormat = document.querySelector('input[name="format"]:checked') as HTMLInputElement | null;
+      if (!checkedFormat) return;
 
-  qualityInput.addEventListener('input', (e) => {
-    qualityValue.textContent = `${Math.round(parseFloat(qualityInput.value) * 100)}%`;
-    convert();
-  });
+      const targetFormat = checkedFormat.value;
+      let ext = 'jpg';
+      if (targetFormat === 'image/png') ext = 'png';
+      if (targetFormat === 'image/webp') ext = 'webp';
 
-  formatInputs.forEach(input => {
-    input.addEventListener('change', convert);
-  });
+      const baseName = originalFile.name.replace(/\.[^/.]+$/, "");
+      const a = document.createElement('a');
+      a.href = convertedUrl;
+      a.download = `${baseName}_converted.${ext}`;
+      a.click();
+    });
+  }
 
-  downloadBtn.addEventListener('click', () => {
-    if (!convertedUrl || !originalFile) return;
-    const targetFormat = (document.querySelector('input[name="format"]:checked') as HTMLInputElement).value;
-    let ext = 'jpg';
-    if (targetFormat === 'image/png') ext = 'png';
-    if (targetFormat === 'image/webp') ext = 'webp';
-
-    const baseName = originalFile.name.replace(/\.[^/.]+$/, "");
-    const a = document.createElement('a');
-    a.href = convertedUrl;
-    a.download = `${baseName}_converted.${ext}`;
-    a.click();
-  });
+  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('swup:page:view', init);
 </script>
