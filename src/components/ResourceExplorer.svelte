@@ -4,22 +4,28 @@
   import type { Category, Tag, ResourceItem } from '../types';
   import ResourceCard from './ResourceCard.svelte';
 
-  export let categories: Category[] = [];
-  export let tags: Tag[] = [];
-  export let list: ResourceItem[] = [];
+  let { categories = [], tags = [], list = [] } = $props<{
+    categories: Category[];
+    tags: Tag[];
+    list: ResourceItem[];
+  }>();
 
-  let currentCategory = categories.length > 0 ? categories[0].id : 'all';
-  let currentTag = 'all';
-  let searchQuery = '';
+  let currentCategory = $state(categories.length > 0 ? categories[0].id : 'all');
+  let currentTag = $state('all');
+  let searchQuery = $state('');
 
-  $: filteredTags = tags.filter(tag => tag.id === 'all' || currentCategory === 'all' || tag.categoryId === currentCategory);
+  let filteredTags = $derived(
+    tags.filter(tag => tag.id === 'all' || currentCategory === 'all' || tag.categoryId === currentCategory)
+  );
 
-  $: filteredList = list.filter(resource => {
-    const matchCategory = currentCategory === 'all' || resource.categoryId === currentCategory;
-    const matchTag = currentTag === 'all' || resource.tagId === currentTag;
-    const matchSearch = searchQuery === '' || resource.title.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCategory && matchTag && matchSearch;
-  });
+  let filteredList = $derived(
+    list.filter(resource => {
+      const matchCategory = currentCategory === 'all' || resource.categoryId === currentCategory;
+      const matchTag = currentTag === 'all' || resource.tagId === currentTag;
+      const matchSearch = searchQuery === '' || resource.title.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchCategory && matchTag && matchSearch;
+    })
+  );
 
   function setCategory(id: string) {
     currentCategory = id;
@@ -57,7 +63,7 @@
           {currentCategory === cat.id
             ? 'bg-primary-600 text-white border-primary-600 shadow-md shadow-primary-500/20 hover:bg-primary-700'
             : 'bg-white/60 dark:bg-white/5 text-gray-600 dark:text-gray-300 border-transparent hover:bg-white dark:hover:bg-white/10 shadow-sm'}"
-          on:click={() => setCategory(cat.id)}
+          onclick={() => setCategory(cat.id)}
         >
           {cat.name}
         </button>
@@ -74,7 +80,7 @@
           {currentTag === tag.id
             ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-500/20'
             : 'bg-transparent text-gray-500 dark:text-gray-400 border-transparent hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-800 dark:hover:text-gray-200'}"
-          on:click={() => setTag(tag.id)}
+          onclick={() => setTag(tag.id)}
         >
           {tag.name}
         </button>
@@ -85,7 +91,7 @@
   <!-- Resource Matrix Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     {#each filteredList as resource (resource.id)}
-      <div animate:flip={{ duration: 300 }} in:fade={{ duration: 200 }} out:fade={{ duration: 150 }}>
+      <div transition:fade={{ duration: 200 }} animate:flip={{ duration: 300 }}>
         <ResourceCard {resource} />
       </div>
     {/each}
