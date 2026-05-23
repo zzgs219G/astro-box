@@ -89,9 +89,9 @@
   </div>
 
   <!-- Resource Matrix Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[500px]" style="content-visibility: auto;">
     {#each filteredList as resource (resource.id)}
-      <div transition:fade={{ duration: 200 }} animate:flip={{ duration: 300 }}>
+      <div in:fade={{ duration: 200, delay: 50 }} out:fade={{ duration: 100 }} animate:flip={{ duration: 300 }}>
         <ResourceCard {resource} />
       </div>
     {/each}
