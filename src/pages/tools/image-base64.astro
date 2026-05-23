@@ -1,0 +1,117 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout>
+  <div class="max-w-4xl mx-auto py-12 px-4">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">📋 图片转 Base64</h1>
+      <p class="text-gray-500 dark:text-gray-400">上传图片输出 Base64 字符串，支持复制和下载</p>
+    </div>
+
+    <div class="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-sm rounded-[1.25rem] p-8 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
+      <div
+        id="dropzone"
+        class="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl p-12 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors duration-300"
+      >
+        <div class="text-4xl mb-4">📤</div>
+        <p class="text-gray-600 dark:text-gray-300 font-medium">点击或拖拽上传图片文件</p>
+      </div>
+
+      <input type="file" id="fileInput" accept="image/*" class="hidden" />
+
+      <div id="workspace" class="hidden mt-8 space-y-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Base64 结果</h3>
+          <span id="stringLength" class="text-xs text-gray-400 dark:text-gray-500">长度: 0</span>
+        </div>
+        <textarea
+          id="base64Output"
+          readonly
+          class="w-full h-48 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl text-sm font-mono text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none break-all"
+        ></textarea>
+        
+        <div class="flex flex-wrap gap-4 justify-center pt-4">
+          <button id="copyBtn" class="px-8 py-3 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors duration-300 shadow-sm">复制到剪贴板</button>
+          <button id="downloadBtn" class="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-colors duration-300 shadow-sm">下载为 .txt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function() {
+      const dropzone = document.getElementById('dropzone');
+      const fileInput = document.getElementById('fileInput');
+      const workspace = document.getElementById('workspace');
+      const base64Output = document.getElementById('base64Output');
+      const stringLength = document.getElementById('stringLength');
+      const copyBtn = document.getElementById('copyBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      let currentFileName = 'image';
+
+      if (!dropzone || !fileInput || !workspace || !base64Output || !stringLength || !copyBtn || !downloadBtn) return;
+
+      function handleFile(file) {
+        if (!file.type.startsWith('image/')) {
+          alert('请上传图片文件');
+          return;
+        }
+        currentFileName = file.name.replace(/\.[^/.]+$/, "");
+        dropzone.classList.add('hidden');
+        workspace.classList.remove('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target.result;
+          base64Output.value = result;
+          stringLength.textContent = `长度: ${result.length}`;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      dropzone.addEventListener('click', () => fileInput.click());
+      
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      });
+      
+      dropzone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+      });
+      
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-500/10');
+        const file = e.dataTransfer?.files[0];
+        if (file) handleFile(file);
+      });
+      
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files?.[0];
+        if (file) handleFile(file);
+      });
+      
+      copyBtn.addEventListener('click', () => {
+        if (!base64Output.value) return;
+        navigator.clipboard.writeText(base64Output.value).then(() => {
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = '已复制!';
+          setTimeout(() => copyBtn.textContent = originalText, 2000);
+        });
+      });
+      
+      downloadBtn.addEventListener('click', () => {
+        if (!base64Output.value) return;
+        const blob = new Blob([base64Output.value], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentFileName}_base64.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</Layout>

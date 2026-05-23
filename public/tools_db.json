@@ -1,0 +1,36 @@
+{
+  "list": [
+    {
+      "id": "tool-image-compress",
+      "title": "🖼️ 图片压缩",
+      "description": "调节质量滑块，本地压缩 JPG/PNG，安全不上传",
+      "lanzaoUrl": "/tools/image-compress",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    },
+    {
+      "id": "tool-image-webp",
+      "title": "🔄 图片格式转换",
+      "description": "JPG / PNG / WebP 互转，带质量控制，纯本地处理",
+      "lanzaoUrl": "/tools/image-convert",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    },
+    {
+      "id": "tool-image-base64",
+      "title": "📋 图片转 Base64",
+      "description": "上传图片输出 Base64 字符串，支持复制和下载",
+      "lanzaoUrl": "/tools/image-base64",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    },
+    {
+      "id": "tool-image-watermark",
+      "title": "💧 图片加水印",
+      "description": "本地添加文字水印，自定义位置、颜色、透明度",
+      "lanzaoUrl": "/tools/image-watermark",
+      "categoryId": "toolbox",
+      "tagId": "all"
+    }
+  ]
+}

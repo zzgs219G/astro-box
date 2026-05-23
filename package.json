@@ -13,14 +13,21 @@
   },
   "dependencies": {
     "@astrojs/svelte": "^8.1.1",
+    "@iconify/svelte": "^5.2.1",
     "@swup/fade-theme": "^2.0.2",
     "@swup/slide-theme": "^2.0.2",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.3.7",
     "lanzou-api": "^0.1.8",
-    "svelte": "^5.55.9",
+    "overlayscrollbars": "^2.16.0",
+    "pagefind": "^1.5.2",
+    "photoswipe": "^5.4.4",
     "swup": "^4.9.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "svelte": "^5.55.9",
+    "svelte-preprocess": "^6.0.4"
   }
 }
