@@ -14,10 +14,10 @@ import Layout from '../../layouts/Layout.astro';
         id="dropzone"
         class="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl p-12 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors duration-300"
       >
-        <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" class="hidden" />
         <div class="text-4xl mb-4">📤</div>
         <p class="text-gray-600 dark:text-gray-300 font-medium">点击或拖拽上传 JPG/PNG/WebP 图片</p>
       </div>
+      <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" class="hidden" />
 
       <div id="workspace" class="hidden mt-8 space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
